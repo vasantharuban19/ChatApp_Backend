@@ -23,6 +23,7 @@ app.use(cookieParser());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: corsOption,
+  allowEIO3: true,
 });
 
 app.set("io", io);
