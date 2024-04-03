@@ -67,7 +67,7 @@ const socketAuthenticated = async (err, socket, next) => {
 
     return next();
   } catch (error) {
-    console.log(error);
+    next(error);
     return next(new ErrorHandler("Please login to access", 401));
   }
 };

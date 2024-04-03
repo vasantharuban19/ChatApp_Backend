@@ -25,7 +25,7 @@ cloudinary.config({
 app.use(express.json());
 
 // app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOption));
 
 app.get("/", (req, res) => {
   res.send("MERN PROJECT Chat App Backend");
