@@ -31,7 +31,6 @@ const adminLogin = async (req, res, next) => {
         token,
       });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
