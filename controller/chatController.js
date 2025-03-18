@@ -33,7 +33,7 @@ const newGroupChat = async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: "Group created successfully",
+      message: "Group Created Successfully",
     });
   } catch (error) {
     next(error);
