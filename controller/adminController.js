@@ -23,7 +23,7 @@ const adminLogin = async (req, res, next) => {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: "none",
-        secure: process.env.NODE_ENV === "production",
+        secure: process.env.NODE_ENV === "PRODUCTION",
       })
       .json({
         success: true,
@@ -43,8 +43,8 @@ const adminLogout = async (req, res, next) => {
         expires: new Date(0),
         maxAge: 0,
         httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "PRODUCTION" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "PRODUCTION",
       })
       .json({
         success: true,
