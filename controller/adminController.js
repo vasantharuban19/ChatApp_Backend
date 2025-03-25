@@ -9,13 +9,13 @@ const adminLogin = async (req, res, next) => {
   try {
     const { secretKey } = req.body;
 
-    const isMatch = secretKey === adminSecretKey;
-
-    if (!isMatch) {
+    if (secretKey !== adminSecretKey) {
       return next(new ErrorHandler("Invalid Secret Key", 401));
     }
 
-    const token = jwt.sign(secretKey, process.env.JWT_SECRET);
+    const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
+      expiresIn: "15d",
+    });
 
     return res
       .status(200)
@@ -23,7 +23,7 @@ const adminLogin = async (req, res, next) => {
         maxAge: 15 * 24 * 60 * 60 * 1000,
         httpOnly: true,
         sameSite: "none",
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
       })
       .json({
         success: true,
@@ -40,10 +40,11 @@ const adminLogout = async (req, res, next) => {
     return res
       .status(200)
       .cookie("jwt-admin", "", {
+        expires: new Date(0),
         maxAge: 0,
         httpOnly: true,
-        sameSite: "strict",
-        secure: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
       })
       .json({
         success: true,

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/utility.js";
-import { adminSecretKey } from "../app.js";
 import { User } from "../model/userModel.js";
 
 const isAuthenticated = async (req, res, next) => {
@@ -29,17 +28,18 @@ const adminOnly = async (req, res, next) => {
     const token = req.cookies["jwt-admin"];
 
     if (!token) {
-      return next(new ErrorHandler("Unauthorized - Only Admin can Access", 401));
+      return next(
+        new ErrorHandler("Unauthorized - Only Admin can Access", 401)
+      );
     }
-    const secretKey = jwt.verify(token, process.env.JWT_SECRET);
 
-    const isMatch = secretKey === adminSecretKey;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!isMatch) {
+    if (!decoded || decoded.role !== "admin") {
       return next(new ErrorHandler("Unauthorized - Invalid Token", 401));
     }
 
-    req.user = secretKey._id;
+    req.user = decoded;
 
     next();
   } catch (error) {
@@ -51,7 +51,7 @@ const socketAuthenticated = async (err, socket, next) => {
   try {
     if (err) return next(err);
 
-    const authToken = socket.request.cookies["jwt"]; 
+    const authToken = socket.request.cookies["jwt"];
 
     if (!authToken)
       return next(new ErrorHandler("Please login to access", 401));
@@ -60,8 +60,7 @@ const socketAuthenticated = async (err, socket, next) => {
 
     const user = await User.findById(decoded._id);
 
-    if (!user)
-      return next(new ErrorHandler("Please login to access", 401));
+    if (!user) return next(new ErrorHandler("Please login to access", 401));
 
     socket.user = user;
 
