@@ -94,22 +94,29 @@ const logout = async (req, res, next) => {
 const searchUser = async (req, res, next) => {
   try {
     const { name = "" } = req.query;
-    // finding my chats
+
+    // Finding my chats
     const myChats = await Chat.find({ groupChat: false, members: req.user });
-    // extract users from my chats
+
+    // Extract users from my chats
     const allUsersFromMyChats = myChats.flatMap((chat) => chat.members);
+
+    const excludedUsers = [...allUsersFromMyChats, req.user._id];
+
+    // console.log("Excluded Users:", excludedUsers);
 
     // Finding all users except me and my friends
     const allUsersExceptMeAndFriends = await User.find({
-      _id: { $nin: allUsersFromMyChats },
+      _id: { $nin: excludedUsers }, // Exclude logged-in user and friends
       name: { $regex: name, $options: "i" },
     });
 
-    // Modifying the response
+    // console.log("Fetched Users:", allUsersExceptMeAndFriends);
+
     const users = allUsersExceptMeAndFriends.map(({ _id, name, avatar }) => ({
       _id,
       name,
-      avatar: avatar.url,
+      avatar: avatar?.url || "",
     }));
 
     res.status(200).json({
