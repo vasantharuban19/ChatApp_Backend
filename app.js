@@ -9,6 +9,9 @@ import { app, server } from "./socketio/socket.js";
 import cors from "cors";
 import { v2 as cloudinary } from "cloudinary";
 import { corsOption } from "./constant/config.js";
+import dns from "dns";
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 dotenv.config();
 
