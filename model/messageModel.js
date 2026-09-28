@@ -1,8 +1,12 @@
-import mongoose,{ Schema, Types ,model} from "mongoose";
+import mongoose, { Schema, Types, model } from "mongoose";
 
-const userSchema = new Schema(
+const messageSchema = new Schema(
   {
-    content: String,
+    content: {
+      type: String,
+      trim: true,
+      default: "",
+    },
 
     attachments: [
       {
@@ -21,16 +25,36 @@ const userSchema = new Schema(
       type: Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
+
     chat: {
       type: Types.ObjectId,
       ref: "Chat",
       required: true,
+      index: true,
     },
+
+    deliveredTo: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    readBy: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Message = mongoose.models.Message || model("Message", userSchema);
+messageSchema.index({ chat: 1, createdAt: -1 });
+
+export const Message =
+  mongoose.models.Message || model("Message", messageSchema);
